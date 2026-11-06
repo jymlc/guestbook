@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook
+  labels:
+    app: guestbook
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: guestbook
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: guestbook
+    spec:
+      containers:
+        - name: guestbook
+          image: guestbook:v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: http
+          resources:
+            requests:
+              cpu: 2m
+              memory: 32Mi
+            limits:
+              cpu: 5m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook
+spec:
+  selector:
+    app: guestbook
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
