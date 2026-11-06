@@ -33,7 +33,7 @@ grep -E '<title>|<h1>' public/index.html > "$evidence/03-index-v1.txt"
   echo '$ kubectl get hpa guestbook'
   kubectl get hpa guestbook
 } | tee "$evidence/04-hpa-created.txt"
-awk '$1=="guestbook" && $6==0 { found=1 } END { exit !found }' "$evidence/04-hpa-created.txt"
+awk '$1=="guestbook" && $(NF-1)==0 { found=1 } END { exit !found }' "$evidence/04-hpa-created.txt"
 
 kubectl apply -f deployment.yml
 kubectl rollout status deployment/guestbook --timeout=180s
